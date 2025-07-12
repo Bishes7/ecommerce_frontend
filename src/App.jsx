@@ -5,6 +5,8 @@ import { Container } from "react-bootstrap";
 import Footer from "./components/Footer";
 
 const App = () => {
+  console.log("✅ FRONTEND BASE_URL:", import.meta.env.VITE_BASE_URL);
+
   return (
     <>
       <Header />

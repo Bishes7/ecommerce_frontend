@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { Message } from "../components/ui/Message";
 import { FaTrash } from "react-icons/fa";
-import { addToCart } from "../slices/cartSlice";
+import { addToCart, removeFromCart } from "../slices/cartSlice";
 
 export const CartPage = () => {
   const navigate = useNavigate();
@@ -22,6 +22,14 @@ export const CartPage = () => {
 
   const addToCartHandler = async (product, qty) => {
     dispatch(addToCart({ ...product, qty }));
+  };
+
+  const removeFromCartHandler = (id) => {
+    dispatch(removeFromCart(id));
+  };
+
+  const checkoutHandler = () => {
+    navigate("/login?redirect=/shipping");
   };
 
   return (
@@ -64,7 +72,11 @@ export const CartPage = () => {
                     </Form.Control>
                   </Col>
                   <Col md={2}>
-                    <Button type="button" variant="light">
+                    <Button
+                      onClick={() => removeFromCartHandler(item._id)}
+                      type="button"
+                      variant="light"
+                    >
                       <FaTrash className="text-danger" />
                     </Button>
                   </Col>
@@ -84,6 +96,7 @@ export const CartPage = () => {
             </ListGroup.Item>
             <ListGroup.Item>
               <Button
+                onClick={checkoutHandler}
                 type="button"
                 className="btn-block"
                 disabled={cartItems.length < 1}
