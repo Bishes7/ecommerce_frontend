@@ -1,11 +1,17 @@
-import { Navbar, Nav, Container, Badge } from "react-bootstrap";
+import { Navbar, Nav, Container, Badge, NavDropdown } from "react-bootstrap";
 import { FaShoppingCart, FaUser } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { LinkContainer } from "react-router-bootstrap";
 
 const Header = () => {
   // use selectot
   const { cartItems } = useSelector((state) => state.cartInfo);
+  const { userInfo } = useSelector((state) => state.auth);
+
+  const logoutHandler = (e) => {
+    e.preventDefault();
+  };
 
   return (
     <header>
@@ -22,10 +28,22 @@ const Header = () => {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="ms-auto">
-              <Nav.Link as={Link} to="/login">
-                Login
-                <FaUser />
-              </Nav.Link>
+              {userInfo ? (
+                <NavDropdown title={userInfo.name} id="username">
+                  <Nav.Link as={Link} to="/profile">
+                    <NavDropdown.Item>Profile</NavDropdown.Item>
+                  </Nav.Link>
+
+                  <NavDropdown.Item onClick={logoutHandler}>
+                    Logout
+                  </NavDropdown.Item>
+                </NavDropdown>
+              ) : (
+                <Nav.Link as={Link} to="/login">
+                  Login
+                  <FaUser />
+                </Nav.Link>
+              )}
 
               <Nav.Link as={Link} to="/cart">
                 Cart <FaShoppingCart />
