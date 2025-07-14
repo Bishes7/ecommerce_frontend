@@ -18,6 +18,7 @@ import ProductPage from "./pages/ProductPage.jsx";
 import { CartPage } from "./pages/CartPage.jsx";
 import LogInPage from "./pages/LogInPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
+import ShippingAddress from "./pages/ShippingAddress.jsx";
 
 // for the routes
 const router = createBrowserRouter(
@@ -28,6 +29,7 @@ const router = createBrowserRouter(
       <Route path="/cart" element={<CartPage />} />
       <Route path="/login" element={<LogInPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/shipping" element={<ShippingAddress />} />
     </Route>
   )
 );
