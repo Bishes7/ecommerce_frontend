@@ -19,6 +19,7 @@ import { CartPage } from "./pages/CartPage.jsx";
 import LogInPage from "./pages/LogInPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import ShippingAddress from "./pages/ShippingAddress.jsx";
+import PrivateRoutes from "./components/PrivateRoutes.jsx";
 
 // for the routes
 const router = createBrowserRouter(
@@ -29,7 +30,10 @@ const router = createBrowserRouter(
       <Route path="/cart" element={<CartPage />} />
       <Route path="/login" element={<LogInPage />} />
       <Route path="/register" element={<RegisterPage />} />
-      <Route path="/shipping" element={<ShippingAddress />} />
+
+      <Route path="" element={<PrivateRoutes />}>
+        <Route path="/shipping" element={<ShippingAddress />} />
+      </Route>
     </Route>
   )
 );
