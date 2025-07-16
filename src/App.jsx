@@ -7,8 +7,6 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
-  console.log("✅ FRONTEND BASE_URL:", import.meta.env.VITE_BASE_URL);
-
   return (
     <>
       <Header />

@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import store from "./store/store.js";
 import {
+  BrowserRouter,
   createBrowserRouter,
   createRoutesFromElements,
   Route,
@@ -18,8 +19,9 @@ import ProductPage from "./pages/ProductPage.jsx";
 import { CartPage } from "./pages/CartPage.jsx";
 import LogInPage from "./pages/LogInPage.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
-import ShippingAddress from "./pages/ShippingAddress.jsx";
 import PrivateRoutes from "./components/PrivateRoutes.jsx";
+import ShippingAddressPage from "./pages/ShippingAddressPage.jsx";
+import PaymentPage from "./pages/PaymentPage.jsx";
 
 // for the routes
 const router = createBrowserRouter(
@@ -32,7 +34,8 @@ const router = createBrowserRouter(
       <Route path="/register" element={<RegisterPage />} />
 
       <Route path="" element={<PrivateRoutes />}>
-        <Route path="/shipping" element={<ShippingAddress />} />
+        <Route path="/shipping" element={<ShippingAddressPage />} />
+        <Route path="/payment" element={<PaymentPage />} />
       </Route>
     </Route>
   )
