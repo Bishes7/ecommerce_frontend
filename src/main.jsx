@@ -23,6 +23,7 @@ import PrivateRoutes from "./components/PrivateRoutes.jsx";
 import ShippingAddressPage from "./pages/ShippingAddressPage.jsx";
 import PaymentPage from "./pages/PaymentPage.jsx";
 import PlaceOrderPage from "./pages/PlaceOrderPage.jsx";
+import OrderPage from "./pages/OrderPage.jsx";
 
 // for the routes
 const router = createBrowserRouter(
@@ -38,6 +39,7 @@ const router = createBrowserRouter(
         <Route path="/shipping" element={<ShippingAddressPage />} />
         <Route path="/payment" element={<PaymentPage />} />
         <Route path="/place-order" element={<PlaceOrderPage />} />
+        <Route path="/order/:id" element={<OrderPage />} />
       </Route>
     </Route>
   )

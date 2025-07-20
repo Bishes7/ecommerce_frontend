@@ -27,13 +27,7 @@ const PlaceOrderPage = () => {
   const placeOrderHandler = async () => {
     try {
       const res = await createOrder({
-        orderItems: cart.cartItems.map((item) => ({
-          name: item.name,
-          qty: item.qty,
-          image: item.image, // required
-          price: item.price,
-          product: item._id || item.product, // ensure it's the ID only
-        })),
+        orderItems: cart.cartItems,
         shippingAddress: cart.shippingAddress,
         paymentMethod: cart.paymentMethod,
         itemsPrice: cart.itemsPrice,
@@ -41,11 +35,10 @@ const PlaceOrderPage = () => {
         taxPrice: cart.taxPrice,
         totalPrice: cart.totalPrice,
       }).unwrap();
-
       dispatch(clearCartItems());
       navigate(`/order/${res._id}`);
     } catch (error) {
-      toast.error(error?.data?.message || error?.message || "Order failed");
+      toast.error(error);
     }
   };
 
@@ -81,7 +74,12 @@ const PlaceOrderPage = () => {
                     <ListGroup.Item key={i}>
                       <Row>
                         <Col md={1}>
-                          <Image src={item.image} fluid rounded />
+                          <Image
+                            src={item.image}
+                            alt={item.name}
+                            fluid
+                            rounded
+                          />
                         </Col>
                         <Col>
                           <Link to={`/products/${item.product}`}>
