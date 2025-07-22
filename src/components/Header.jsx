@@ -43,9 +43,9 @@ const Header = () => {
             <Nav className="ms-auto">
               {userInfo ? (
                 <NavDropdown title={userInfo.name} id="username">
-                  <Nav.Link as={Link} to="/profile">
-                    <NavDropdown.Item>Profile</NavDropdown.Item>
-                  </Nav.Link>
+                  <NavDropdown.Item as={Link} to="profile">
+                    Profile
+                  </NavDropdown.Item>
 
                   <NavDropdown.Item onClick={logoutHandler}>
                     Logout

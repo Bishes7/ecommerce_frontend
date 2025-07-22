@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
-import { Link, useParams } from "react-router-dom";
+import { data, Link, useParams } from "react-router-dom";
 import {
   useGetOrderDetailsQuery,
   useGetPayPalClientIdQuery,
@@ -202,7 +202,7 @@ const OrderPage = () => {
                           createOrder={createOrder}
                           onApprove={onApprove}
                           onError={onError}
-                        ></PayPalButtons>
+                        />
                       </div>
                     </div>
                   )}
