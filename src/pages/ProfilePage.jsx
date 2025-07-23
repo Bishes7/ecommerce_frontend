@@ -21,6 +21,9 @@ const ProfilePage = () => {
     }
   }, [userInfo.name, userInfo.email, userInfo]);
 
+  const [updateProfile, { isLoading: loadingUpdateProfile }] =
+    useProfileMutation();
+
   const submitHandler = async (e) => {
     e.preventDefault();
 
@@ -41,9 +44,6 @@ const ProfilePage = () => {
       }
     }
   };
-
-  const [updateProfile, { isLoading: loadingUpdateProfile }] =
-    useProfileMutation();
 
   return (
     <Row>
@@ -76,6 +76,7 @@ const ProfilePage = () => {
               type="password"
               placeholder="Enter password"
               value={password}
+              autoComplete="new-password"
               onChange={(e) => setPassword(e.target.value)}
             />
           </Form.Group>
