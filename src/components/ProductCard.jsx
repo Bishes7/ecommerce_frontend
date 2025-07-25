@@ -3,9 +3,14 @@ import { Link } from "react-router-dom";
 import Rating from "./Rating";
 
 const ProductCard = ({ product }) => {
+  const imageSrc =
+    product?.image && product.image.startsWith("/uploads")
+      ? `${import.meta.env.VITE_API_BASE_URL}${product.image}`
+      : product?.image || "/images/placeholder.png"; // fallback if undefined
+
   return (
     <Card className="my-3 p-3 rounded">
-      <Card.Img src={product.image} variant="top" />
+      <Card.Img src={imageSrc} variant="top" />
 
       <Card.Body>
         <Link to={`/product/${product._id}`}>

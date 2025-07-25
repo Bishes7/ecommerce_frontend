@@ -35,8 +35,12 @@ const Header = () => {
         collapseOnSelect
         className="nav"
       >
-        <Container className="fw-bold ">
-          <Navbar.Brand>Ecommerce Shop</Navbar.Brand>
+        <Container className="fw-bold  ">
+          <Navbar.Brand>
+            <Nav.Link as={Link} to="/" className="text-white">
+              Ecommerce Shop
+            </Nav.Link>
+          </Navbar.Brand>
 
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
