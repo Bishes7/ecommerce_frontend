@@ -1,4 +1,5 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import {
   Button,
@@ -37,6 +38,7 @@ const ProductPage = () => {
     refetch,
     error,
   } = useGetProductsDetailsQuery(productId);
+  console.log(product);
 
   const [createReview, { isLoading: loadingReview }] =
     useCreateReviewMutation();
@@ -47,6 +49,23 @@ const ProductPage = () => {
   const addToCartHandler = () => {
     dispatch(addToCart({ ...product, qty }));
     navigate("/cart");
+  };
+
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    try {
+      await createReview({
+        productId,
+        rating,
+        comment,
+      }).unwrap();
+      refetch();
+      toast.success("Review submitted");
+      setRating(0);
+      setComment("");
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
   };
 
   return (
@@ -147,20 +166,23 @@ const ProductPage = () => {
               <h2>Reviews</h2>
               {product.reviews.length === 0 && <Message>No reviews</Message>}
               <ListGroup variant="flush">
-                {product.reviews.map((review) => (
-                  <ListGroup.Item key={review._id}>
-                    <strong>{review.name}</strong>
-                    <Rating value={review.rating} />
-                    <p>{review.createdAt.substring(0, 10)}</p>
-                    <p>{review.comment}</p>
-                  </ListGroup.Item>
-                ))}
+                {product.reviews?.map((review) =>
+                  review ? (
+                    <ListGroup.Item key={review._id}>
+                      <strong>{review.name || "User"}</strong>
+                      <Rating value={review.rating} />
+                      <p>{review.createdAt?.substring(0, 10)}</p>
+                      <p>{review.comment || "No comment added"}</p>
+                    </ListGroup.Item>
+                  ) : null
+                )}
+
                 <ListGroup.Item>
                   <h2>Write a review</h2>
                   {loadingReview && <Loader />}
 
                   {userInfo ? (
-                    <Form>
+                    <Form onSubmit={submitHandler}>
                       <Form.Group controlId="rating" className="my-2">
                         <Form.Label>Rating</Form.Label>
                         <Form.Control
@@ -209,4 +231,3 @@ const ProductPage = () => {
 };
 
 export default ProductPage;
-6;
