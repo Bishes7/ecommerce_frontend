@@ -43,15 +43,39 @@ table th {
   margin-top: 10px;
 }
 
-.carousel-caption {
+/* .carousel-caption {
   position: absolute;
   width: 100%;
   left: 0;
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
+} */
+.carousel-caption h2 {
+  position: absolute;
+  color: white;
+  background: rgba(0, 0, 0, 0.5);
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+  padding: 14px;
+  bottom: 9rem;
+}
+.custom-carousel .caurosel-img {
+  height: 80%;
+  object-fit: cover;
 }
 
+.custom-carousel {
+  height: 350px;
+  overflow: hidden;
+}
+@media (max-width: 768px) {
+  .custom-carousel {
+    height: 250px;
+    object-fit: cover;
+  }
+}
 .nav {
   position: absolute;
 }
