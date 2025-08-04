@@ -1,4 +1,4 @@
-import { ORDERS_URL, PAYPAL_URL } from "../constants";
+import { ORDERS_URL, PAYPAL_URL, PRODUCTS_URL } from "../constants";
 import { apiSlice } from "./apiSlice";
 
 export const ordersApiSlice = apiSlice.injectEndpoints({
@@ -46,6 +46,27 @@ export const ordersApiSlice = apiSlice.injectEndpoints({
         method: "PUT",
       }),
     }),
+
+    fetchOrderStats: builder.query({
+      query: () => ({
+        url: `${ORDERS_URL}/stats`,
+      }),
+      keepUnusedDataFor: 5,
+    }),
+
+    fetchOrderStatusStats: builder.query({
+      query: () => ({
+        url: `${ORDERS_URL}/status-stats`,
+      }),
+      keepUnusedDataFor: 5,
+    }),
+
+    fetchRevenueStats: builder.query({
+      query: () => ({
+        url: `${ORDERS_URL}/revenue-stats`,
+      }),
+      keepUnusedDataFor: 5,
+    }),
   }),
 });
 
@@ -56,4 +77,7 @@ export const {
   useGetPayPalClientIdQuery,
   useGetOrdersQuery,
   useDeliverOrderMutation,
+  useFetchOrderStatsQuery,
+  useFetchOrderStatusStatsQuery,
+  useFetchRevenueStatsQuery,
 } = ordersApiSlice;

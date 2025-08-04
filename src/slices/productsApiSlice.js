@@ -70,6 +70,13 @@ export const productsApiSlice = apiSlice.injectEndpoints({
       }),
       keepUnusedDataFor: 5,
     }),
+
+    fetchProductStats: builder.query({
+      query: () => ({
+        url: `${PRODUCTS_URL}/stats`,
+      }),
+      keepUnusedDataFor: 5,
+    }),
   }),
 });
 
@@ -82,4 +89,5 @@ export const {
   useDeleteProductMutation,
   useCreateReviewMutation,
   useFetchTopProductsQuery,
+  useFetchProductStatsQuery,
 } = productsApiSlice;
