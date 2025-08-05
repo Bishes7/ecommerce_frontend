@@ -2,6 +2,7 @@ import { Navbar, Nav, Container, Badge, NavDropdown } from "react-bootstrap";
 import { FaShoppingCart, FaUser } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import logo from "../assets/logo.png";
 
 import { useLogoutMutation } from "../slices/usersApiSlice";
 import { logout } from "../slices/authSlice";
@@ -37,10 +38,8 @@ const Header = () => {
         className="nav"
       >
         <Container className="fw-bold  ">
-          <Navbar.Brand>
-            <Nav.Link as={Link} to="/" className="text-white">
-              Ecommerce Shop
-            </Nav.Link>
+          <Navbar.Brand as={Link} to="/">
+            <img src={logo} alt="logo" className="navbar-logo" />
           </Navbar.Brand>
 
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
