@@ -81,7 +81,16 @@ const ProductPage = () => {
         <>
           <Row>
             <Col md={5}>
-              <Image src={product.image} alt={product.name} fluid />
+              <Image
+                src={
+                  product?.image
+                    ? `${import.meta.env.VITE_API_BASE_URL}${product.image}`
+                    : product?.image || "/images/placeholder.png"
+                }
+                alt={product.name}
+                className="product-img"
+                fluid
+              />
             </Col>
             <Col md={4}>
               <ListGroup variant="flush">

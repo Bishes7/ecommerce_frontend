@@ -8,29 +8,42 @@ import { Link } from "react-router-dom";
 const ProductsCarousel = () => {
   const { data: products, isLoading, error } = useFetchTopProductsQuery();
 
-  return isLoading ? (
-    <Loader />
-  ) : error ? (
-    <Message variant="danger">{error}</Message>
-  ) : (
-    <Carousel pause="hover" className="bg-primary mb-3 custom-carousel ">
-      {products.map((product) => (
-        <Carousel.Item key={product._id}>
-          <Link to={`/product/${product._id}`}>
-            <Image
-              src={product.image}
-              alt={product.name}
-              fluid
-              className="carousel-img "
-            />
-            <Carousel.Caption className="carousel-caption">
-              <h2>
-                {product.name} (${product.price})
-              </h2>
-            </Carousel.Caption>
-          </Link>
-        </Carousel.Item>
-      ))}
+  if (isLoading) return <Loader />;
+  if (error)
+    return <Message variant="danger">{error?.data || "Error"} </Message>;
+
+  return (
+    <Carousel
+      pause="hover"
+      interval={4000}
+      fade
+      className="custom-carousel mb-4"
+    >
+      {products.map((product) => {
+        const img = product.image?.startsWith("/uploads")
+          ? `${import.meta.env.VITE_API_BASE_URL}${product.image}`
+          : product.image || "/images/placeholder.jpg";
+
+        return (
+          <Carousel.Item key={product._id}>
+            <div className="carousel-content">
+              <div className="carousel-left">
+                <Image src={img} alt={product.name} className="carousel-img" />
+              </div>
+              <div className="carousel-right">
+                <h3>{product.name}</h3>
+                <p className="price">Rs.{product.price}</p>
+                <Link
+                  to={`/product/${product._id}`}
+                  className="btn btn-primary mt-2"
+                >
+                  View Details
+                </Link>
+              </div>
+            </div>
+          </Carousel.Item>
+        );
+      })}
     </Carousel>
   );
 };

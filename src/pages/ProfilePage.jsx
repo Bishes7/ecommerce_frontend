@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useProfileMutation } from "../slices/usersApiSlice";
 import { toast } from "react-toastify";
 import { setCredentials } from "../slices/authSlice";
+import { Link } from "react-router-dom";
 
 const ProfilePage = () => {
   const [name, setName] = useState("");
@@ -95,7 +96,6 @@ const ProfilePage = () => {
           </Button>
         </Form>
       </Col>
-      <Col md={9}></Col>
     </Row>
   );
 };

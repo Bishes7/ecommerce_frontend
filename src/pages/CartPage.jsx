@@ -92,7 +92,7 @@ export const CartPage = () => {
           <ListGroup variant="flush" className="shadow-lg">
             <ListGroup.Item>
               <h2>Subtotal {cartItems.reduce((a, i) => a + i.qty, 0)} items</h2>
-              ${cartItems.reduce((a, i) => a + i.qty * i.price, 0).toFixed(2)}
+              Rs.{cartItems.reduce((a, i) => a + i.qty * i.price, 0).toFixed(2)}
             </ListGroup.Item>
             <ListGroup.Item>
               <Button
