@@ -5,11 +5,13 @@ import { Container } from "react-bootstrap";
 import Footer from "./components/Footer";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ChatBot from "./components/ui/chatbot";
 
 const App = () => {
   return (
     <>
       <Header />
+      <ChatBot />
       <main className="py-3">
         <Container>
           <Outlet />

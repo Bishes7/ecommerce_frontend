@@ -120,16 +120,7 @@ table th {
   min-width: 300px;
   max-width: 100%;
 }
-
-.logo-img {
-  height: 70px; /* Keeps navbar height safe */
-  width: auto;
-  display: block;
-  margin-top: -5px; /* Adjust vertical alignment */
-  padding: 0;
-  object-fit: contain;
-}
-.navbar-logo {
+.site-logo {
   height: 20px;
-  transform: scale(7); /* Scales visually without affecting layout */
+  transform: scale(3);
 }
