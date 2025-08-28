@@ -95,6 +95,9 @@ const ProfilePage = () => {
             Update Details
           </Button>
         </Form>
+        <Link to="/admin/productlist">
+          <Button>Edit Products</Button>
+        </Link>
       </Col>
     </Row>
   );

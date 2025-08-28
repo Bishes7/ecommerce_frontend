@@ -89,7 +89,6 @@ const ProductPage = () => {
                 }
                 alt={product.name}
                 className="product-img"
-                fluid
               />
             </Col>
             <Col md={4}>
@@ -103,7 +102,7 @@ const ProductPage = () => {
                     text={`${product.numReviews} reviews`}
                   />
                 </ListGroup.Item>
-                <ListGroup.Item> Price: ${product.price}</ListGroup.Item>
+                <ListGroup.Item> Price: Rs.{product.price}</ListGroup.Item>
                 <ListGroup.Item>
                   Description:{product.description}
                 </ListGroup.Item>

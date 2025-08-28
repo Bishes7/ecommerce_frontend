@@ -6,7 +6,10 @@ import "../../components/ChatBot.css";
 const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { sender: "bot", text: "Namaste! How may I help you?" },
+    {
+      sender: "bot",
+      text: "Namaste! Please contact use on (9808007257) or sanchezbibek9@gmail.com?",
+    },
   ]);
   const [input, setInput] = useState("");
 

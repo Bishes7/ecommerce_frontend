@@ -75,10 +75,14 @@ const PlaceOrderPage = () => {
                       <Row>
                         <Col md={1}>
                           <Image
-                            src={item.image}
-                            alt={item.name}
-                            fluid
-                            rounded
+                            src={
+                              item?.image && item.image.startsWith("/uploads")
+                                ? `${import.meta.env.VITE_API_BASE_URL}${
+                                    item.image
+                                  }`
+                                : item?.image || "/images/placeholder.png"
+                            }
+                            className="product-img"
                           />
                         </Col>
                         <Col>
@@ -87,7 +91,8 @@ const PlaceOrderPage = () => {
                           </Link>
                         </Col>
                         <Col md={4}>
-                          {item.qty} x ${item.price} = ${item.qty * item.price}
+                          {item.qty} x Rs{item.price} = Rs
+                          {item.qty * item.price}
                         </Col>
                       </Row>
                     </ListGroup.Item>
@@ -106,28 +111,28 @@ const PlaceOrderPage = () => {
               <ListGroup.Item>
                 <Row>
                   <Col>Items: </Col>
-                  <Col>$ {cart.itemsPrice}</Col>
+                  <Col>Rs. {cart.itemsPrice}</Col>
                 </Row>
               </ListGroup.Item>
 
               <ListGroup.Item>
                 <Row>
                   <Col>Shipping: </Col>
-                  <Col>$ {cart.shippingPrice}</Col>
+                  <Col>Rs. {cart.shippingPrice}</Col>
                 </Row>
               </ListGroup.Item>
 
               <ListGroup.Item>
                 <Row>
                   <Col>Tax: </Col>
-                  <Col>$ {cart.taxPrice}</Col>
+                  <Col>Rs. {cart.taxPrice}</Col>
                 </Row>
               </ListGroup.Item>
 
               <ListGroup.Item>
                 <Row>
                   <Col>Total: </Col>
-                  <Col>$ {cart.totalPrice}</Col>
+                  <Col>Rs. {cart.totalPrice}</Col>
                 </Row>
               </ListGroup.Item>
 
