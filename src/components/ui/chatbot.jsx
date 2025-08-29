@@ -50,11 +50,12 @@ const ChatBot = () => {
 
   return (
     <div className="chatbot-container">
-      {/* Floating avatar button */}
       {!isOpen && (
-        <button className="chatbot-button" onClick={toggleChat}>
-          <img src={chatbotAvatar} alt="Chatbot" className="chatbot-avatar" />
-        </button>
+        <div className="chatbot-bubble-container">
+          <button className="chatbot-button" onClick={toggleChat}>
+            <img src={chatbotAvatar} alt="Chatbot" className="chatbot-avatar" />
+          </button>
+        </div>
       )}
 
       {/* Chat window */}

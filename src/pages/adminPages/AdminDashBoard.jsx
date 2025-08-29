@@ -6,7 +6,7 @@ import RevenueAreaChart from "../../components/charts/RevenueAreaChart";
 
 const AdminDashBoard = () => {
   return (
-    <div className="dashboard">
+    <div className="dashboard ">
       <div className="chart-row">
         <OrdersBarChart />;
         <OrdersPerDayChart />
