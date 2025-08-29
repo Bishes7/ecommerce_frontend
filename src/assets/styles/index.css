@@ -2,7 +2,7 @@ main {
   min-height: 80vh;
 }
 body {
-  background: linear-gradient(135deg, #f0f4ff, #e6ecff);
+  background: linear-gradient(135deg, #d2daf1, #bdd4eb);
   margin: 0;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -144,8 +144,23 @@ table th {
   background-color: #ffffff;
 }
 
-.btn-hover:hover {
-  background-color: #0d6efd !important;
-  transform: scale(1.02);
-  transition: 0.3s ease-in-out;
+.chatbot-avatar {
+  width: 70px;
+  height: 70px;
+  cursor: pointer;
+  animation: bounce 2s infinite; /* Add the bounce animation */
+}
+.chatbot-button {
+  margin-right: 30px;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+    transform: scale(1.4);
+  }
 }
