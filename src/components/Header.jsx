@@ -3,14 +3,20 @@ import { FaShoppingCart, FaUser } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
-
+import { HiOutlineLogout } from "react-icons/hi";
 import { useLogoutMutation } from "../slices/usersApiSlice";
 import { logout } from "../slices/authSlice";
 import SearchBox from "./SearchBox";
+import { BiSolidDashboard } from "react-icons/bi";
+import { HiUsers } from "react-icons/hi";
+import { FaSitemap } from "react-icons/fa";
+import { AiFillMessage } from "react-icons/ai";
 
 const Header = () => {
   const { cartItems } = useSelector((state) => state.cartInfo);
   const { userInfo } = useSelector((state) => state.auth);
+
+  const admin = userInfo?.isAdmin;
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -46,24 +52,32 @@ const Header = () => {
           </div>
 
           {/* Icons */}
-          <div className="d-flex align-items-center">
+          <div className="d-flex align-items-center fw-bold">
             {userInfo ? (
               <NavDropdown title={userInfo.name} id="username" align="end">
                 <NavDropdown.Item as={Link} to="/profile">
-                  Profile
+                  <FaUser /> Profile
                 </NavDropdown.Item>
                 <NavDropdown.Item onClick={logoutHandler}>
-                  Logout
+                  <HiOutlineLogout /> LogOut
                 </NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/admin/dashboard">
-                  Dashboard
-                </NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/admin/userlist">
-                  Userlist
-                </NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/admin/orderlist">
-                  Orderlist
-                </NavDropdown.Item>
+
+                {admin && (
+                  <>
+                    <NavDropdown.Item as={Link} to="/admin/dashboard">
+                      <BiSolidDashboard /> Dashboard
+                    </NavDropdown.Item>
+                    <NavDropdown.Item as={Link} to="/admin/userlist">
+                      <HiUsers /> Userlist
+                    </NavDropdown.Item>
+                    <NavDropdown.Item as={Link} to="/admin/orderlist">
+                      <FaSitemap /> Orderlist
+                    </NavDropdown.Item>
+                    <NavDropdown.Item as={Link} to="/admin/message">
+                      <AiFillMessage /> Messages
+                    </NavDropdown.Item>
+                  </>
+                )}
               </NavDropdown>
             ) : (
               <Link to="/login" className="text-decoration-none text-dark me-3">
@@ -93,7 +107,7 @@ const Header = () => {
       {/* Navigation Menu */}
       <Navbar bg="primary" variant="dark" expand="lg">
         <Container>
-          <Nav className="mx-auto">
+          <Nav className="mx-auto shadow-md fw-bold ">
             <Nav.Link as={Link} to="/category/tv-audio">
               TV & Audio
             </Nav.Link>

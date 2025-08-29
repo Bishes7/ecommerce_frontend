@@ -33,6 +33,7 @@ import EditProductPage from "./pages/adminPages/EditProductPage.jsx";
 import UserListPage from "./pages/adminPages/UserListPage.jsx";
 import EditUserPage from "./pages/adminPages/EditUserPage.jsx";
 import AdminDashBoard from "./pages/adminPages/AdminDashBoard.jsx";
+import AdminMessagePage from "./pages/adminPages/AdminMessagePage.jsx";
 
 // for the routes
 const router = createBrowserRouter(
@@ -70,6 +71,7 @@ const router = createBrowserRouter(
         <Route path="/admin/userlist" element={<UserListPage />} />
         <Route path="/admin/user/:id/edit" element={<EditUserPage />} />
         <Route path="/admin/dashboard" element={<AdminDashBoard />} />
+        <Route path="/admin/message" element={<AdminMessagePage />} />
       </Route>
     </Route>
   )

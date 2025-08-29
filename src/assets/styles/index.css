@@ -1,6 +1,11 @@
 main {
   min-height: 80vh;
 }
+body {
+  background: linear-gradient(135deg, #f0f4ff, #e6ecff);
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
 
 .rating span {
   margin: 0.1rem;
@@ -8,6 +13,12 @@ main {
 
 .rating svg {
   color: #f8e825;
+}
+.card {
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 20px;
 }
 
 .rating-text {
@@ -125,4 +136,16 @@ table th {
   font-size: 1.2rem;
   color: #007bff;
   font-weight: bold;
+}
+
+.profile-card {
+  max-width: 450px;
+  margin: auto;
+  background-color: #ffffff;
+}
+
+.btn-hover:hover {
+  background-color: #0d6efd !important;
+  transform: scale(1.02);
+  transition: 0.3s ease-in-out;
 }

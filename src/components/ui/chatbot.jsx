@@ -2,8 +2,12 @@ import { useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import chatbotAvatar from "../../assets/avatar.png";
 import "../../components/ChatBot.css";
+import { useCreateMessageMutation } from "../../slices/messageApiSlice";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 const ChatBot = () => {
+  const { userInfo } = useSelector((state) => state.auth);
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     {
@@ -15,11 +19,24 @@ const ChatBot = () => {
 
   const toggleChat = () => setIsOpen(!isOpen);
 
-  const handleSend = () => {
+  const [createMessage, { isLoading, error }] = useCreateMessageMutation();
+
+  const handleSend = async () => {
     if (!input.trim()) return;
 
-    // Add user message
-    setMessages([...messages, { sender: "user", text: input }]);
+    const userMessage = input;
+    setMessages((prev) => [...prev, { sender: "user", text: userMessage }]);
+
+    try {
+      await createMessage({
+        name: userInfo.name,
+        email: userInfo.email,
+        message: userMessage,
+      }).unwrap();
+      toast.success("Message sent successfully");
+    } catch (err) {
+      console.log(err?.data?.message);
+    }
     setInput("");
 
     // Simulate bot reply
@@ -68,7 +85,9 @@ const ChatBot = () => {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type a message..."
             />
-            <button onClick={handleSend}>Send</button>
+            <button onClick={handleSend} disabled={isLoading}>
+              {isLoading ? "Sending" : "Send"}
+            </button>
           </div>
         </div>
       )}
