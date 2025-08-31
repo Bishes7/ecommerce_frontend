@@ -74,6 +74,11 @@ const LogInPage = () => {
 
         {isLoading && <Loader />}
       </Form>
+      <div className="my-3">
+        <Link to="/forgot-password" className="text-danger ">
+          Forgot Password?{" "}
+        </Link>
+      </div>
       <Row className="py-3">
         <Col>
           New Customer ?{" "}

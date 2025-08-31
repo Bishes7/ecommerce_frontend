@@ -173,3 +173,15 @@ table th {
   transform: scale(1.05);
   box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
 }
+.payment-form {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.payment-form legend {
+  font-size: 1.2rem;
+}
+
+.payment-form .form-check {
+  font-size: 1rem;
+}

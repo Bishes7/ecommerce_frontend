@@ -34,6 +34,7 @@ import UserListPage from "./pages/adminPages/UserListPage.jsx";
 import EditUserPage from "./pages/adminPages/EditUserPage.jsx";
 import AdminDashBoard from "./pages/adminPages/AdminDashBoard.jsx";
 import AdminMessagePage from "./pages/adminPages/AdminMessagePage.jsx";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage.jsx";
 
 // for the routes
 const router = createBrowserRouter(
@@ -52,6 +53,7 @@ const router = createBrowserRouter(
       <Route path="/cart" element={<CartPage />} />
       <Route path="/login" element={<LogInPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
       <Route path="" element={<PrivateRoutes />}>
         <Route path="/shipping" element={<ShippingAddressPage />} />

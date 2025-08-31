@@ -1,57 +1,66 @@
-import React, { useEffect, useState } from "react";
-import FormContainer from "../components/FormContainer";
-import CheckoutSteps from "../components/CheckoutSteps";
+import React, { useState } from "react";
 import { Button, Col, Form } from "react-bootstrap";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
 import { paymentMethodInfo } from "../slices/cartSlice";
+import { useNavigate } from "react-router-dom";
 
+/**
+ * PaymentPage Component
+ * Allows users to select a payment method and proceed to the order page.
+ */
 const PaymentPage = () => {
-  const [paymentMethod, setPaymentMethod] = useState("PayPal");
-
+  const [paymentMethod, setPaymentMethod] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  const { shippingAddress } = useSelector((state) => state.cartInfo);
-
-  useEffect(() => {
-    !shippingAddress && navigate("/shipping");
-  }, [shippingAddress, navigate]);
 
   const submitHandler = (e) => {
     e.preventDefault();
 
+    if (!paymentMethod) {
+      toast.error("Please select a payment method");
+      return;
+    }
+
+    // Save the chosen payment method in Redux state
     dispatch(paymentMethodInfo(paymentMethod));
     navigate("/place-order");
   };
 
   return (
-    <FormContainer>
-      <CheckoutSteps step1 step2 step3 />
+    <div className="container py-4">
+      <h2 className="mb-3 text-center">Select Payment Method</h2>
 
-      <h1>Payment Method</h1>
-      <Form onSubmit={submitHandler}>
+      <Form
+        onSubmit={submitHandler}
+        className="payment-form p-4 shadow-sm rounded bg-light"
+      >
         <Form.Group>
-          <Form.Label as="legend">Select Method</Form.Label>
+          <Form.Label as="legend" className="fw-bold">
+            Available Methods
+          </Form.Label>
           <Col>
-            <Form.Check
-              type="radio"
-              className="my-2"
-              label="Paypal or Credit Card "
-              id="PayPal"
-              name="paymentMethod"
-              value="PayPal"
-              checked
-              onChange={(e) => setPaymentMethod(e.target.value)}
-            ></Form.Check>
+            {["eSewa", "Khalti", "Cash on Delivery"].map((method) => (
+              <Form.Check
+                key={method}
+                type="radio"
+                className="my-2"
+                label={method}
+                id={method.toLowerCase().replace(/\s+/g, "-")}
+                name="paymentMethod"
+                value={method}
+                checked={paymentMethod === method}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+              />
+            ))}
           </Col>
         </Form.Group>
 
-        <Button type="submit" variant="primary">
+        <Button type="submit" variant="primary" className="mt-3 w-100">
           Continue
         </Button>
       </Form>
-    </FormContainer>
+    </div>
   );
 };
 

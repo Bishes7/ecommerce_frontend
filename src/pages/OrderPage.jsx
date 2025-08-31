@@ -1,19 +1,17 @@
 import React, { useEffect } from "react";
-import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 import { Link, useParams } from "react-router-dom";
 import {
   useDeliverOrderMutation,
   useGetOrderDetailsQuery,
-  useGetPayPalClientIdQuery,
-  usePayOrderMutation,
 } from "../slices/ordersApiSlice";
 import { Loader } from "../components/ui/Loader";
 import { Message } from "../components/ui/Message";
 import { Button, Card, Col, Image, ListGroup, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
+import KhaltiButton from "../components/KhaltiButton";
 
-const OrderPage = () => {
+const OrderPage = ({ orders }) => {
   const { id: orderId } = useParams();
 
   const {
@@ -23,78 +21,10 @@ const OrderPage = () => {
     error,
   } = useGetOrderDetailsQuery(orderId);
 
-  const [payOrder, { isLoading: loadingPay }] = usePayOrderMutation();
-
-  const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
-
   const [deliverOrder, { isLoading: loadingDeliver }] =
     useDeliverOrderMutation();
 
-  const {
-    data: paypal,
-    isLoading: loadingPayPal,
-    error: errorPayPal,
-  } = useGetPayPalClientIdQuery();
-
   const { userInfo } = useSelector((state) => state.auth);
-
-  useEffect(() => {
-    if (!errorPayPal && !loadingPayPal && paypal.clientId) {
-      const loadPayPalScript = async () => {
-        paypalDispatch({
-          type: "resetOptions",
-          value: {
-            clientId: paypal.clientId,
-            currency: "AUD",
-          },
-        });
-        paypalDispatch({ type: "setLoadingStatus", value: "pending" });
-      };
-      if (order && !order.isPaid) {
-        if (!window.paypal) {
-          loadPayPalScript();
-        }
-      }
-    }
-  }, [order, paypal, paypalDispatch, loadingPayPal, errorPayPal]);
-
-  const onApprove = (data, actions) => {
-    return actions.order.capture().then(async function (details) {
-      try {
-        await payOrder({ orderId, details });
-        refetch();
-        toast.success("Payment Successful");
-      } catch (err) {
-        toast.error(err?.data?.message || err.message);
-      }
-    });
-  };
-
-  const onApproveTest = async () => {
-    await payOrder({ orderId, details: { payer: {} } });
-    refetch();
-    toast.success("Payment Successful");
-  };
-
-  const onError = (err) => {
-    toast.error(err.message);
-  };
-
-  const createOrder = (data, actions) => {
-    return actions.order
-      .create({
-        purchase_units: [
-          {
-            amount: {
-              value: order.totalPrice,
-            },
-          },
-        ],
-      })
-      .then((orderId) => {
-        return orderId;
-      });
-  };
 
   const deliverOrderHandler = async () => {
     try {
@@ -109,13 +39,21 @@ const OrderPage = () => {
   return isLoading ? (
     <Loader />
   ) : error ? (
-    <Message variant="danger" />
+    <Message variant="danger">Failed to load order details</Message>
   ) : (
     <>
-      <h1>{order._id}</h1>
+      <h2>Order ID: {order._id}</h2>
+      <p>Total: Rs. {order.totalPrice}</p>
+      <KhaltiButton
+        amount={order.totalPrice}
+        purchaseOrderId={order._id}
+        purchaseOrderName="B&B Electronics order"
+      />
       <Row>
+        {/* Left column */}
         <Col md={8}>
           <ListGroup variant="flush">
+            {/* Shipping Info */}
             <ListGroup.Item>
               <h2>Shipping Details</h2>
               <p>
@@ -139,6 +77,7 @@ const OrderPage = () => {
               )}
             </ListGroup.Item>
 
+            {/* Payment Method */}
             <ListGroup.Item>
               <h2>Payment Method</h2>
               <p>
@@ -150,8 +89,49 @@ const OrderPage = () => {
               ) : (
                 <Message variant="danger">Not Paid</Message>
               )}
+
+              {/* Conditional Buttons for Payment Methods */}
+              {!order.isPaid && order.paymentMethod === "eSewa" && (
+                <Button
+                  variant="success"
+                  className="mt-2"
+                  onClick={() =>
+                    alert("eSewa payment integration coming soon!")
+                  }
+                >
+                  Pay with eSewa
+                </Button>
+              )}
+
+              {!order.isPaid && order.paymentMethod === "Khalti" && (
+                <Button
+                  variant="info"
+                  className="mt-2"
+                  onClick={() =>
+                    alert("Khalti payment integration coming soon!")
+                  }
+                >
+                  Pay with Khalti
+                </Button>
+              )}
+
+              {(!order.isPaid && order.paymentMethod === "COD") ||
+                (order.paymentMethod === "Cash on Delivery" && (
+                  <Card className="mt-2 p-3" style={{ background: "#eaf6ff" }}>
+                    <h5>Dear {userInfo.name},</h5>
+                    <p>
+                      Thank you very much for shopping with us. We will contact
+                      you soon to confirm your order.
+                    </p>
+                    <p>
+                      If you have any queries, please call us on{" "}
+                      <strong>9808007257</strong> /<strong>9841578991s</strong>.
+                    </p>
+                  </Card>
+                ))}
             </ListGroup.Item>
 
+            {/* Order Items */}
             <ListGroup.Item>
               <h2>Order Items</h2>
               {order.orderItems.map((item, index) => (
@@ -170,7 +150,7 @@ const OrderPage = () => {
                       />
                     </Col>
                     <Col>
-                      <Link to={`/product/Rs.{item.product}`}>{item.name}</Link>
+                      <Link to={`/product/${item.product}`}>{item.name}</Link>
                     </Col>
                   </Row>
                 </ListGroup.Item>
@@ -178,6 +158,8 @@ const OrderPage = () => {
             </ListGroup.Item>
           </ListGroup>
         </Col>
+
+        {/* Right column - Order Summary */}
         <Col md={4}>
           <Card>
             <ListGroup variant="flush">
@@ -207,31 +189,7 @@ const OrderPage = () => {
                 </Row>
               </ListGroup.Item>
 
-              {!order.isPaid && (
-                <ListGroup.Item>
-                  {loadingPay && <Loader />}
-                  {isPending ? (
-                    <Loader />
-                  ) : (
-                    <div>
-                      <Button
-                        onClick={onApproveTest}
-                        style={{ marginBottom: "10px" }}
-                      >
-                        Test Pay Order
-                      </Button>
-                      <div>
-                        <PayPalButtons
-                          createOrder={createOrder}
-                          onApprove={onApprove}
-                          onError={onError}
-                        />
-                      </div>
-                    </div>
-                  )}
-                </ListGroup.Item>
-              )}
-
+              {/* Admin Delivery Button */}
               {loadingDeliver && <Loader />}
               {userInfo &&
                 userInfo.isAdmin &&
