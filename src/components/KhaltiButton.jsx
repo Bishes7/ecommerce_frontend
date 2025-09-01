@@ -1,51 +1,69 @@
 import React from "react";
+
 import KhaltiCheckout from "khalti-checkout-web";
-import { useCreatePaymentIntentMutation } from "../slices/paymentApiSlice";
+import {
+  useCreatePaymentIntentMutation,
+  useVerifyPaymentMutation,
+} from "../slices/paymentApiSlice";
+import { toast } from "react-toastify";
 
 const KhaltiButton = ({ amount, purchaseOrderId, purchaseOrderName }) => {
   const [createKhaltiPayment] = useCreatePaymentIntentMutation();
-  console.log("Khalti Key:", import.meta.env.VITE_KHALTI_PUBLIC_KEY);
+  const [verifyKhaltiPayment] = useVerifyPaymentMutation();
 
   const handlePayment = async () => {
     try {
-      // 1. Create payment intent from backend
-      const response = await createKhaltiPayment({
+      // 1) Ask backend to create payment; it returns { pidx, payment_url, ... }
+      const { pidx, payment_url } = await createKhaltiPayment({
         amount,
         purchaseOrderId,
         purchaseOrderName,
       }).unwrap();
 
-      // 2. Configure Khalti Checkout
-      let config = {
-        publicKey: import.meta.env.VITE_KHALTI_PUBLIC_KEY,
-        productIdentity: purchaseOrderId,
-        productName: purchaseOrderName,
-        productUrl: window.location.href,
+      if (!payment_url) {
+        toast.error("Payment URL missing from backend");
+        return;
+      }
+
+      const checkout = new KhaltiCheckout({
         eventHandler: {
-          onSuccess(payload) {
-            alert("Payment Successful!");
-            console.log("Payload:", payload);
+          onSuccess: async () => {
+            try {
+              const result = await verifyKhaltiPayment({ pidx }).unwrap();
+              if (result.status === "Completed") {
+                toast.success("Payment verified successfully!");
+              } else {
+                toast.error("Payment verification failed!");
+              }
+            } catch (e) {
+              console.error("Verify error:", e);
+              toast.error("Error verifying payment");
+            }
           },
           onError(error) {
-            alert("Payment Failed!");
-            console.error(error);
+            console.error("Khalti error:", error);
+            toast.error("Payment failed!");
+          },
+          onClose() {
+            console.log("Khalti widget closed");
           },
         },
-      };
+      });
 
-      // 3. Open Khalti checkout
-      let checkout = new KhaltiCheckout(config);
-      checkout.show({ amount: amount * 100 }); // convert to paisa
+      checkout.show({ payment_url });
     } catch (err) {
-      alert("Failed to create Khalti payment intent");
-      console.error(err);
+      // shows any backend/init errors
+      console.error("Create Payment Error:", err);
+      const msg =
+        err?.data?.message || err?.message || "Payment could not be initiated";
+      toast.error(msg);
     }
   };
 
   return (
     <button
       onClick={handlePayment}
-      className="bg-dark text-white px-4 py-2 rounded hover:bg-purple-700"
+      className="bg-purple-700 text-white px-4 py-2 rounded hover:bg-purple-800"
     >
       Pay with Khalti
     </button>

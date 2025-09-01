@@ -103,18 +103,6 @@ const OrderPage = ({ orders }) => {
                 </Button>
               )}
 
-              {!order.isPaid && order.paymentMethod === "Khalti" && (
-                <Button
-                  variant="info"
-                  className="mt-2"
-                  onClick={() =>
-                    alert("Khalti payment integration coming soon!")
-                  }
-                >
-                  Pay with Khalti
-                </Button>
-              )}
-
               {(!order.isPaid && order.paymentMethod === "COD") ||
                 (order.paymentMethod === "Cash on Delivery" && (
                   <Card className="mt-2 p-3" style={{ background: "#eaf6ff" }}>

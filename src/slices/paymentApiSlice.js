@@ -1,5 +1,6 @@
-import { PAYMENT_URL } from "../constants";
+// src/slices/paymentApiSlice.js
 import { apiSlice } from "./apiSlice";
+import { PAYMENT_URL } from "../constants";
 
 export const paymentApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -10,28 +11,15 @@ export const paymentApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
-
-    // verify payment
     verifyPayment: builder.mutation({
       query: (data) => ({
-        url: `${PAYMENT_URL}/verify`,
+        url: `${PAYMENT_URL}/khalti/verify`,
         method: "POST",
         body: data,
       }),
     }),
-
-    // get payment details
-    getPaymentDetails: builder.query({
-      query: (paymentId) => ({
-        url: `${PAYMENT_URL}/${paymentId}`,
-      }),
-      keepUnusedDataFor: 5,
-    }),
   }),
 });
 
-export const {
-  useCreatePaymentIntentMutation,
-  useGetPaymentDetailsQuery,
-  useVerifyPaymentMutation,
-} = paymentApiSlice;
+export const { useCreatePaymentIntentMutation, useVerifyPaymentMutation } =
+  paymentApiSlice;
