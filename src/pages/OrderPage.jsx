@@ -1,17 +1,23 @@
-import React, { useEffect } from "react";
+// src/pages/OrderPage.jsx
+import React from "react";
 import { Link, useParams } from "react-router-dom";
-import {
-  useDeliverOrderMutation,
-  useGetOrderDetailsQuery,
-} from "../slices/ordersApiSlice";
+
 import { Loader } from "../components/ui/Loader";
 import { Message } from "../components/ui/Message";
 import { Button, Card, Col, Image, ListGroup, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
-import KhaltiButton from "../components/KhaltiButton";
 
-const OrderPage = ({ orders }) => {
+import {
+  useDeliverOrderMutation,
+  useGetOrderDetailsQuery,
+  usePayOrderMutation,
+} from "../slices/ordersApiSlice";
+import EsewaButton from "../components/ESewaButton";
+// If you also want to keep Khalti, import it here:
+// import KhaltiButton from "../components/KhaltiButton";
+
+const OrderPage = () => {
   const { id: orderId } = useParams();
 
   const {
@@ -21,63 +27,88 @@ const OrderPage = ({ orders }) => {
     error,
   } = useGetOrderDetailsQuery(orderId);
 
+  const [payOrder, { isLoading: loadingPay }] = usePayOrderMutation();
   const [deliverOrder, { isLoading: loadingDeliver }] =
     useDeliverOrderMutation();
 
   const { userInfo } = useSelector((state) => state.auth);
 
-  const deliverOrderHandler = async () => {
+  const markPaidHandler = async () => {
     try {
-      await deliverOrder(orderId);
-      refetch();
-      toast.success("Order delivered");
+      await payOrder({
+        orderId,
+        details: {
+          isPaid: true,
+          paymentResult: { id: "OFFLINE", status: "COMPLETED" },
+        },
+      }).unwrap();
+      await refetch();
+      toast.success("Order marked as paid");
     } catch (err) {
       toast.error(err?.data?.message || err.message);
     }
   };
 
-  return isLoading ? (
-    <Loader />
-  ) : error ? (
-    <Message variant="danger">Failed to load order details</Message>
-  ) : (
+  const deliverOrderHandler = async () => {
+    try {
+      await deliverOrder(orderId).unwrap();
+      await refetch();
+      toast.success("Order marked as delivered");
+    } catch (err) {
+      toast.error(err?.data?.message || err.message);
+    }
+  };
+
+  if (isLoading) return <Loader />;
+  if (error)
+    return <Message variant="danger">Failed to load order details</Message>;
+
+  return (
     <>
       <h2>Order ID: {order._id}</h2>
       <p>Total: Rs. {order.totalPrice}</p>
-      <KhaltiButton
-        amount={order.totalPrice}
-        purchaseOrderId={order._id}
-        purchaseOrderName="B&B Electronics order"
-      />
+
+      {!order.isPaid && (
+        <div className="d-flex gap-2 mb-3">
+          <EsewaButton amount={order.totalPrice} orderId={order._id} />
+          {/* Keep Khalti if you want both
+          <KhaltiButton
+            amount={order.totalPrice}
+            purchaseOrderId={order._id}
+            purchaseOrderName="B&B Electronics order"
+          /> */}
+        </div>
+      )}
+
       <Row>
-        {/* Left column */}
         <Col md={8}>
           <ListGroup variant="flush">
-            {/* Shipping Info */}
             <ListGroup.Item>
               <h2>Shipping Details</h2>
               <p>
-                <strong>Name: </strong> {order.user.name}
+                <strong>Name: </strong> {order.user?.name}
               </p>
               <p>
-                <strong>Email: </strong> {order.user.email}
+                <strong>Email: </strong> {order.user?.email}
               </p>
               <p>
                 <strong>Address: </strong>
-                {order.shippingAddress.address}, {order.shippingAddress.city}{" "}
-                {order.shippingAddress.postalCode},{" "}
-                {order.shippingAddress.country}
+                {order.shippingAddress?.address}, {order.shippingAddress?.city}{" "}
+                {order.shippingAddress?.postalCode},{" "}
+                {order.shippingAddress?.country}
               </p>
               {order.isDelivered ? (
                 <Message variant="success">
-                  Delivered on {order.deliveredAt}
+                  Delivered on{" "}
+                  {order.deliveredAt
+                    ? new Date(order.deliveredAt).toLocaleString()
+                    : "—"}
                 </Message>
               ) : (
                 <Message variant="danger">Not Delivered</Message>
               )}
             </ListGroup.Item>
 
-            {/* Payment Method */}
             <ListGroup.Item>
               <h2>Payment Method</h2>
               <p>
@@ -85,46 +116,24 @@ const OrderPage = ({ orders }) => {
                 {order.paymentMethod}
               </p>
               {order.isPaid ? (
-                <Message variant="success">Paid on {order.paidAt}</Message>
+                <Message variant="success">
+                  Paid on{" "}
+                  {order.paidAt ? new Date(order.paidAt).toLocaleString() : "—"}
+                </Message>
               ) : (
-                <Message variant="danger">Not Paid</Message>
+                <>
+                  <Message variant="danger">Not Paid</Message>
+                  {/* Optional inline button if you prefer it inside this card:
+                  <EsewaDemoButton amount={order.totalPrice} orderId={order._id} /> */}
+                </>
               )}
-
-              {/* Conditional Buttons for Payment Methods */}
-              {!order.isPaid && order.paymentMethod === "eSewa" && (
-                <Button
-                  variant="success"
-                  className="mt-2"
-                  onClick={() =>
-                    alert("eSewa payment integration coming soon!")
-                  }
-                >
-                  Pay with eSewa
-                </Button>
-              )}
-
-              {(!order.isPaid && order.paymentMethod === "COD") ||
-                (order.paymentMethod === "Cash on Delivery" && (
-                  <Card className="mt-2 p-3" style={{ background: "#eaf6ff" }}>
-                    <h5>Dear {userInfo.name},</h5>
-                    <p>
-                      Thank you very much for shopping with us. We will contact
-                      you soon to confirm your order.
-                    </p>
-                    <p>
-                      If you have any queries, please call us on{" "}
-                      <strong>9808007257</strong> /<strong>9841578991s</strong>.
-                    </p>
-                  </Card>
-                ))}
             </ListGroup.Item>
 
-            {/* Order Items */}
             <ListGroup.Item>
               <h2>Order Items</h2>
-              {order.orderItems.map((item, index) => (
+              {order.orderItems?.map((item, index) => (
                 <ListGroup.Item key={index}>
-                  <Row>
+                  <Row className="align-items-center">
                     <Col md={2}>
                       <Image
                         src={
@@ -134,11 +143,17 @@ const OrderPage = ({ orders }) => {
                               }`
                             : item?.image || "/images/placeholder.png"
                         }
+                        alt={item.name}
                         className="product-img"
+                        fluid
                       />
                     </Col>
                     <Col>
                       <Link to={`/product/${item.product}`}>{item.name}</Link>
+                    </Col>
+                    <Col md={4}>
+                      {item.qty} x Rs.{item.price} = Rs.
+                      {(item.qty * item.price).toFixed(2)}
                     </Col>
                   </Row>
                 </ListGroup.Item>
@@ -147,7 +162,6 @@ const OrderPage = ({ orders }) => {
           </ListGroup>
         </Col>
 
-        {/* Right column - Order Summary */}
         <Col md={4}>
           <Card>
             <ListGroup variant="flush">
@@ -160,39 +174,42 @@ const OrderPage = ({ orders }) => {
                   <Col>Items</Col>
                   <Col>Rs.{order.itemsPrice}</Col>
                 </Row>
-
                 <Row>
                   <Col>Shipping</Col>
                   <Col>Rs.{order.shippingPrice}</Col>
                 </Row>
-
                 <Row>
                   <Col>Tax</Col>
                   <Col>Rs.{order.taxPrice}</Col>
                 </Row>
-
                 <Row>
                   <Col>Total</Col>
                   <Col>Rs.{order.totalPrice}</Col>
                 </Row>
               </ListGroup.Item>
 
-              {/* Admin Delivery Button */}
-              {loadingDeliver && <Loader />}
-              {userInfo &&
-                userInfo.isAdmin &&
-                order.isPaid &&
-                !order.isDelivered && (
-                  <ListGroup.Item>
-                    <Button
-                      type="button"
-                      className="btn btn-block"
-                      onClick={deliverOrderHandler}
-                    >
-                      Mark as Delivered
-                    </Button>
-                  </ListGroup.Item>
-                )}
+              {(loadingPay || loadingDeliver) && (
+                <ListGroup.Item>
+                  <Loader />
+                </ListGroup.Item>
+              )}
+
+              {/* Admin actions */}
+              {userInfo?.isAdmin && !order.isPaid && (
+                <ListGroup.Item>
+                  <Button className="w-100" onClick={markPaidHandler}>
+                    Mark as Paid (offline)
+                  </Button>
+                </ListGroup.Item>
+              )}
+
+              {userInfo?.isAdmin && order.isPaid && !order.isDelivered && (
+                <ListGroup.Item>
+                  <Button className="w-100" onClick={deliverOrderHandler}>
+                    Mark as Delivered
+                  </Button>
+                </ListGroup.Item>
+              )}
             </ListGroup>
           </Card>
         </Col>

@@ -63,7 +63,7 @@ const KhaltiButton = ({ amount, purchaseOrderId, purchaseOrderName }) => {
   return (
     <button
       onClick={handlePayment}
-      className="bg-purple-700 text-white px-4 py-2 rounded hover:bg-purple-800"
+      className=" btn btn-primary fw-bold my-2 py-2 rounded"
     >
       Pay with Khalti
     </button>

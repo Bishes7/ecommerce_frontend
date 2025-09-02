@@ -36,6 +36,7 @@ import AdminDashBoard from "./pages/adminPages/AdminDashBoard.jsx";
 import AdminMessagePage from "./pages/adminPages/AdminMessagePage.jsx";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage.jsx";
 import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
+import PaymentSuccess from "./pages/PaymentSuccess.jsx";
 
 // for the routes
 const router = createBrowserRouter(
@@ -63,6 +64,8 @@ const router = createBrowserRouter(
         <Route path="/place-order" element={<PlaceOrderPage />} />
         <Route path="/order/:id" element={<OrderPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+
+        <Route path="/payment-success" element={<PaymentSuccess />} />
       </Route>
       <Route path="" element={<AdminRoute />}>
         <Route path="/admin/orderlist" element={<OrderListPage />} />

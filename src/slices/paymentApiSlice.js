@@ -18,8 +18,28 @@ export const paymentApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+
+    esewaInitiate: builder.mutation({
+      query: ({ amount, orderId }) => ({
+        url: `${PAYMENT_URL}/esewa/initiate`,
+        method: "POST",
+        body: { amount, orderId },
+      }),
+    }),
+
+    esewaStatus: builder.query({
+      // pass { total_amount, transaction_uuid }
+      query: ({ total_amount, transaction_uuid }) => ({
+        url: `${PAYMENT_URL}/esewa/status`,
+        params: { total_amount, transaction_uuid },
+      }),
+    }),
   }),
 });
 
-export const { useCreatePaymentIntentMutation, useVerifyPaymentMutation } =
-  paymentApiSlice;
+export const {
+  useCreatePaymentIntentMutation,
+  useVerifyPaymentMutation,
+  useEsewaInitiateMutation,
+  useEsewaStatusQuery,
+} = paymentApiSlice;
