@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Loader } from "../components/ui/Loader";
-import { Message } from "../components/ui/Message";
 import { useEsewaStatusQuery } from "../slices/paymentApiSlice";
 import { usePayOrderMutation } from "../slices/ordersApiSlice";
+import { Loader } from "../components/ui/Loader";
+import { Message } from "../components/ui/Message";
 import { motion } from "framer-motion";
 import { CheckCircle, XCircle } from "lucide-react";
 
@@ -11,13 +11,13 @@ const PaymentSuccess = () => {
   const navigate = useNavigate();
   const [params, setParams] = useState(null);
 
+  // Get transaction details from session storage
   useEffect(() => {
     const raw = sessionStorage.getItem("esewa_txn");
-    if (raw) {
-      setParams(JSON.parse(raw));
-    }
+    if (raw) setParams(JSON.parse(raw));
   }, []);
 
+  // Call API to verify payment
   const { data, isLoading, error } = useEsewaStatusQuery(
     params
       ? {
@@ -30,6 +30,7 @@ const PaymentSuccess = () => {
 
   const [payOrder] = usePayOrderMutation();
 
+  // Mark order as paid if payment successful
   useEffect(() => {
     const run = async () => {
       if (!data || !params) return;
@@ -47,6 +48,7 @@ const PaymentSuccess = () => {
     run().catch(console.error);
   }, [data, params, payOrder, navigate]);
 
+  // Handle missing context
   if (!params)
     return (
       <Message variant="warning">
@@ -54,66 +56,75 @@ const PaymentSuccess = () => {
       </Message>
     );
 
+  // Loading state
   if (isLoading)
     return (
-      <div className="flex flex-col items-center justify-center h-64">
+      <div
+        className="d-flex flex-column align-items-center justify-content-center"
+        style={{ minHeight: "300px" }}
+      >
         <Loader />
-        <p className="mt-4 text-gray-600">Verifying your payment...</p>
+        <p className="mt-3 text-muted">Verifying your payment...</p>
       </div>
     );
 
+  // Error state
   if (error)
     return (
-      <div className="flex flex-col items-center justify-center h-64">
-        <XCircle className="text-red-500" size={64} />
-        <p className="mt-4 text-red-600 font-semibold">
-          Failed to verify your payment. Please contact support.
+      <div
+        className="d-flex flex-column align-items-center justify-content-center text-center"
+        style={{ minHeight: "300px" }}
+      >
+        <XCircle size={64} className="text-danger mb-3" />
+        <h4 className="text-danger">Payment Verification Failed</h4>
+        <p className="text-muted">
+          Please contact support if the amount was deducted.
         </p>
       </div>
     );
 
+  // Success or Failure UI
   return (
-    <div className="flex flex-col items-center justify-center py-12 px-4">
+    <div className="container py-5 d-flex justify-content-center">
       <motion.div
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ type: "spring", stiffness: 200, damping: 10 }}
-        className="flex flex-col items-center text-center bg-white shadow-md rounded-2xl p-6 w-full max-w-md"
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 150, damping: 15 }}
+        className="card shadow-lg p-4 text-center"
+        style={{ maxWidth: "420px", width: "100%", borderRadius: "15px" }}
       >
         {data?.status === "COMPLETE" ? (
           <>
-            <CheckCircle className="text-green-500" size={72} />
-            <h2 className="mt-4 text-2xl font-bold text-green-700">
-              Payment Successful!
-            </h2>
-            <p className="text-gray-700 mt-2">
+            <CheckCircle size={70} className="text-success mb-3" />
+            <h2 className="fw-bold text-success">Payment Successful</h2>
+            <p className="text-muted mb-3">
               Your transaction has been completed successfully.
             </p>
-            <div className="bg-gray-50 border rounded-md mt-4 p-4 w-full">
+
+            <div className="bg-light border rounded p-3 text-start mb-3">
               <p>
-                <strong>Status:</strong> {data?.status}
+                <strong>Status:</strong> {data.status}
               </p>
               <p>
-                <strong>Ref ID:</strong> {data?.ref_id}
+                <strong>Ref ID:</strong> {data.ref_id}
               </p>
               <p>
-                <strong>Amount:</strong> Rs. {params?.total_amount}
+                <strong>Amount:</strong> Rs. {params.total_amount}
               </p>
             </div>
+
             <button
+              className="btn btn-success w-100"
               onClick={() => navigate(`/order/${params.orderId}`)}
-              className="mt-6 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition"
             >
               View Order Details
             </button>
           </>
         ) : (
           <>
-            <XCircle className="text-red-500" size={72} />
-            <h2 className="mt-4 text-2xl font-bold text-red-700">
-              Payment Failed
-            </h2>
-            <p className="text-gray-700 mt-2">
+            <XCircle size={70} className="text-danger mb-3" />
+            <h2 className="fw-bold text-danger">Payment Failed</h2>
+            <p className="text-muted mb-3">
               There was an issue verifying your transaction. Please try again or
               contact support.
             </p>
