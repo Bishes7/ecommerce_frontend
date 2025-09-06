@@ -6,44 +6,113 @@ import { Carousel, Image } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 const ProductsCarousel = () => {
-  const { data: products, isLoading, error } = useFetchTopProductsQuery();
+  const { data: products = [], isLoading, error } = useFetchTopProductsQuery();
 
   if (isLoading) return <Loader />;
   if (error)
-    return <Message variant="danger">{error?.data || "Error"} </Message>;
+    return <Message variant="danger">{error?.data || "Error"}</Message>;
+
+  // Helper for product images (works for /uploads or absolute urls)
+  const getImg = (p) =>
+    p.image?.startsWith("/uploads")
+      ? `${import.meta.env.VITE_API_BASE_URL}${p.image}`
+      : p.image || "/images/placeholder.jpg";
 
   return (
     <Carousel
       pause="hover"
-      interval={4000}
+      interval={4500}
       fade
       className="custom-carousel mb-4"
     >
-      {products.map((product) => {
-        const img = product.image?.startsWith("/uploads")
-          ? `${import.meta.env.VITE_API_BASE_URL}${product.image}`
-          : product.image || "/images/placeholder.jpg";
-
-        return (
-          <Carousel.Item key={product._id}>
-            <div className="carousel-content">
-              <div className="carousel-left">
-                <Image src={img} alt={product.name} className="carousel-img" />
-              </div>
-              <div className="carousel-right">
-                <h3>{product.name}</h3>
-                <p className="price">Rs.{product.price}</p>
-                <Link
-                  to={`/product/${product._id}`}
-                  className="btn btn-primary mt-2"
-                >
-                  View Details
-                </Link>
-              </div>
+      {/* 1) FESTIVE SLIDE (always first) */}
+      <Carousel.Item>
+        <div className="carousel-content festive-hero">
+          <div className="carousel-left d-none d-md-flex justify-content-center align-items-center">
+            <img
+              src="/festive/hero-phone.png"
+              alt="Dashain & Tihar Offers"
+              className="carousel-img festive-art"
+              onError={(e) => {
+                e.currentTarget.src = "/images/placeholder.jpg";
+              }}
+            />
+          </div>
+          <div className="carousel-right">
+            <span className="badge bg-warning text-dark mb-2">
+              Limited Time
+            </span>
+            <h2 className="fw-bold lh-tight mb-2">
+              Dashain & Tihar <span className="text-gradient">Mega Sale</span>
+            </h2>
+            <p className="text-muted mb-2">
+              Up to <strong>30% OFF</strong> on Phones, TVs & Appliances. .
+            </p>
+            <p className="mb-3 fw-semibold">
+              डसैं–तिहार विशेष छुट! आजै अर्डर गर्नुहोस्।
+            </p>
+            <div className="d-flex gap-2 flex-wrap">
+              <Link
+                to="/offers/dashain-tihar"
+                className="btn btn-danger btn-lg"
+              >
+                Shop Offers
+              </Link>
+              <Link to="/brands" className="btn btn-outline-dark">
+                View Brands
+              </Link>
             </div>
-          </Carousel.Item>
-        );
-      })}
+          </div>
+        </div>
+      </Carousel.Item>
+
+      {/* 2) PRODUCT SLIDES */}
+      {products.map((product) => (
+        <Carousel.Item key={product._id}>
+          <div className="carousel-content">
+            <div className="carousel-left">
+              <Image
+                src={getImg(product)}
+                alt={product.name}
+                className="carousel-img"
+                onError={(e) => {
+                  e.currentTarget.src = "/images/placeholder.jpg";
+                }}
+              />
+              {/* Optional festive ribbon on discounted items */}
+              {product.isFestive && (
+                <span className="festive-ribbon">Dashain Deal</span>
+              )}
+            </div>
+
+            <div className="carousel-right">
+              <h3 className="mb-2">{product.name}</h3>
+
+              <div className="d-flex align-items-baseline gap-2">
+                {product.discountPrice ? (
+                  <>
+                    <span className="text-muted text-decoration-line-through">
+                      Rs.{product.price}
+                    </span>
+                    <span className="price price-discount">
+                      Rs.{product.discountPrice}
+                    </span>
+                  </>
+                ) : (
+                  <span className="price">Rs.{product.price}</span>
+                )}
+              </div>
+
+              <Link
+                to={`/product/${product._id}`}
+                className="btn btn-primary mt-3"
+              >
+                View Details
+              </Link>
+            </div>
+          </div>
+        </Carousel.Item>
+      ))}
     </Carousel>
   );
 };

@@ -12,6 +12,7 @@ import { Link, useParams, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import Paginate from "../../components/Paginate";
 import Product from "../../components/Products";
+import FestiveCategoryNote from "../../components/FestiveCategoryNote";
 
 const ProductListPage = () => {
   const { pageNumber, category } = useParams();

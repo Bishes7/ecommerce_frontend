@@ -7,6 +7,7 @@ import { Message } from "../components/ui/Message";
 import { Link, useParams } from "react-router-dom";
 import Paginate from "../components/Paginate";
 import ProductsCarousel from "../components/ProductsCarousel";
+import DashainOffer from "../components/DashainOffer";
 
 const HomePage = () => {
   const { pageNumber, keyword } = useParams();
@@ -24,6 +25,7 @@ const HomePage = () => {
           Go Back
         </Link>
       )}
+      <DashainOffer />
       {isLoading ? (
         <Loader />
       ) : error ? (

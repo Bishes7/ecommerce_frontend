@@ -185,3 +185,53 @@ table th {
 .payment-form .form-check {
   font-size: 1rem;
 }
+
+.festive-topbar {
+  background: linear-gradient(90deg, #c21807, #6a1b9a);
+  color: #fff;
+  padding: 0.5rem 1rem;
+}
+
+/* Festive */
+.festive-bullets li {
+  margin-bottom: 0.35rem;
+  font-size: 0.98rem;
+}
+
+/* Offer grid */
+.offer-card {
+  border: 0;
+  border-radius: 1rem;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  transition: 0.2s;
+}
+.offer-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+}
+.offer-img-wrap {
+  position: relative;
+  min-height: 160px;
+  background: linear-gradient(180deg, #f7f8fc, #fff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.offer-img-wrap img {
+  max-height: 120px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.08));
+}
+.offer-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 0.75rem;
+  background: linear-gradient(90deg, #ff9933, #c21807);
+  color: #fff;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+}
