@@ -20,7 +20,7 @@ const offers = [
   {
     title: "Buy a Fridge → Free Smartwatch",
     sub: "Double-door & premium series",
-    img: "/festive/mix1.png",
+    img: "/festive/sw.png",
     to: "/category/home-appliances",
     label: "FREE",
   },

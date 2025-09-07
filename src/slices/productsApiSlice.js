@@ -5,12 +5,13 @@ export const productsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     // fetch all products
     getProducts: builder.query({
-      query: ({ keyword, pageNumber, category }) => ({
+      query: ({ keyword, pageNumber, category, pageSize }) => ({
         url: PRODUCTS_URL,
         params: {
           pageNumber,
           keyword,
           category,
+          pageSize,
         },
       }),
       providesTags: ["Product"],
@@ -78,6 +79,13 @@ export const productsApiSlice = apiSlice.injectEndpoints({
       }),
       keepUnusedDataFor: 5,
     }),
+
+    fetchHotDeals: builder.query({
+      query: () => ({
+        url: `${PRODUCTS_URL}/hot`,
+      }),
+      keepUnusedDataFor: 5,
+    }),
   }),
 });
 
@@ -91,4 +99,5 @@ export const {
   useCreateReviewMutation,
   useFetchTopProductsQuery,
   useFetchProductStatsQuery,
+  useFetchHotDealsQuery,
 } = productsApiSlice;

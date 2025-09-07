@@ -4,6 +4,7 @@ import { Loader } from "./ui/Loader";
 import { Message } from "./ui/Message";
 import { Carousel, Image } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { FaHandPointDown } from "react-icons/fa";
 
 const ProductsCarousel = () => {
   const { data: products = [], isLoading, error } = useFetchTopProductsQuery();
@@ -27,10 +28,10 @@ const ProductsCarousel = () => {
     >
       {/* 1) FESTIVE SLIDE (always first) */}
       <Carousel.Item>
-        <div className="carousel-content festive-hero">
-          <div className="carousel-left d-none d-md-flex justify-content-center align-items-center">
+        <div className="carousel-content festive-hero ">
+          <div className="carousel-left d-none d-md-flex justify-content-center align-items-center ">
             <img
-              src="/festive/hero-phone.png"
+              src="/festive/all.png"
               alt="Dashain & Tihar Offers"
               className="carousel-img festive-art"
               onError={(e) => {
@@ -45,21 +46,18 @@ const ProductsCarousel = () => {
             <h2 className="fw-bold lh-tight mb-2">
               Dashain & Tihar <span className="text-gradient">Mega Sale</span>
             </h2>
-            <p className="text-muted mb-2">
+            <p className="text-danger mb-2   fw-bold">
               Up to <strong>30% OFF</strong> on Phones, TVs & Appliances. .
             </p>
             <p className="mb-3 fw-semibold">
               डसैं–तिहार विशेष छुट! आजै अर्डर गर्नुहोस्।
             </p>
             <div className="d-flex gap-2 flex-wrap">
-              <Link
-                to="/offers/dashain-tihar"
-                className="btn btn-danger btn-lg"
-              >
-                Shop Offers
-              </Link>
-              <Link to="/brands" className="btn btn-outline-dark">
-                View Brands
+              <button disabled className="btn btn-danger btn-lg d">
+                Shop Offers <FaHandPointDown />
+              </button>
+              <Link to="/hot-deals" className="btn btn-outline-warning">
+                View Hot Deals
               </Link>
             </div>
           </div>
@@ -91,7 +89,7 @@ const ProductsCarousel = () => {
               <div className="d-flex align-items-baseline gap-2">
                 {product.discountPrice ? (
                   <>
-                    <span className="text-muted text-decoration-line-through">
+                    <span className="text-muted text-danger">
                       Rs.{product.price}
                     </span>
                     <span className="price price-discount">
@@ -99,7 +97,7 @@ const ProductsCarousel = () => {
                     </span>
                   </>
                 ) : (
-                  <span className="price">Rs.{product.price}</span>
+                  <span className="price text-danger">Rs.{product.price}</span>
                 )}
               </div>
 

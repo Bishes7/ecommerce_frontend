@@ -37,6 +37,7 @@ import AdminMessagePage from "./pages/adminPages/AdminMessagePage.jsx";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage.jsx";
 import ResetPasswordPage from "./pages/ResetPasswordPage.jsx";
 import PaymentSuccess from "./pages/PaymentSuccess.jsx";
+import { HotDealsPage } from "./pages/HotDealsPage.jsx";
 
 // for the routes
 const router = createBrowserRouter(
@@ -51,6 +52,7 @@ const router = createBrowserRouter(
         path="/category/:category/page/:pageNumber"
         element={<ProductListPage />}
       />
+      <Route path="/hot-deals" element={<HotDealsPage />} />
       <Route path="/product/:id" element={<ProductPage />} />
       <Route path="/cart" element={<CartPage />} />
       <Route path="/login" element={<LogInPage />} />

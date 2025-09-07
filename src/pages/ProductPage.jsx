@@ -83,9 +83,9 @@ const ProductPage = () => {
             <Col md={5}>
               <Image
                 src={
-                  product?.image
-                    ? `${import.meta.env.VITE_API_BASE_URL}${product.image}`
-                    : product?.image || "/images/placeholder.png"
+                  product.image && product.image.startsWith("/uploads")
+                    ? `${import.meta.env.VITE_API_BASE_URL}$product.image}`
+                    : product.image || "/images/placeholder.png"
                 }
                 alt={product.name}
                 className="product-img"

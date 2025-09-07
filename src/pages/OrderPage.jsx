@@ -12,6 +12,7 @@ import {
 } from "../slices/ordersApiSlice";
 
 import EsewaButton from "../components/ESewaButton";
+import KhaltiButton from "../components/KhaltiButton"; // 👈 Add this
 
 const OrderPage = () => {
   const { id: orderId } = useParams();
@@ -88,14 +89,12 @@ const OrderPage = () => {
               paymentResult: { id: result.ref_id, status: result.status },
             },
           }).unwrap();
-          console.log("Payment Result:", order.paymentResult);
 
           await refetch();
           toast.success(`Payment verified (Ref ID: ${result.ref_id})`);
           sessionStorage.removeItem("esewa_txn");
         }
       } catch (err) {
-        console.error("Payment verification failed", err);
         toast.error("Payment verification failed. Try refreshing the page.");
       }
     };
@@ -112,10 +111,26 @@ const OrderPage = () => {
       <h2>Order ID: {order._id}</h2>
       <p>Total: Rs. {order.totalPrice}</p>
 
-      {/* Payment button for unpaid orders */}
+      {/* Payment Options */}
       {!order.isPaid && (
         <div className="d-flex gap-2 mb-3">
-          <EsewaButton amount={order.totalPrice} orderId={order._id} />
+          {order.paymentMethod === "eSewa" && (
+            <EsewaButton amount={order.totalPrice} orderId={order._id} />
+          )}
+
+          {order.paymentMethod === "Khalti" && (
+            <KhaltiButton amount={order.totalPrice} orderId={order._id} />
+          )}
+
+          {order.paymentMethod === "Cash on Delivery" && (
+            <Card className="p-3 shadow-lg border-warning">
+              <h4 className="text-warning fw-bold">Cash on Delivery</h4>
+              <p className="mb-0 ">
+                Thank you for choosing <strong>Cash on Delivery</strong>. Our
+                team will contact you shortly to confirm your order.
+              </p>
+            </Card>
+          )}
         </div>
       )}
 
