@@ -99,9 +99,12 @@ table th {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
-  background: #f8f8f8;
+  padding: 30px;
+
   height: 300px; /* adjust height as needed */
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.748);
+  color: white;
 }
 
 /* Left side: image area */
@@ -117,7 +120,7 @@ table th {
   height: 350px;
   object-fit: contain;
   border-radius: 8px;
-  background: #fff;
+  background: rgba(0, 0, 0, 0.697);
 }
 
 /* Right side: text area */

@@ -50,7 +50,7 @@ const offers = [
   {
     title: "Stabilizer 50% OFF with Fridge",
     sub: "Protect from voltage fluctuation",
-    img: "/festive/stabilizer.png",
+    img: "/festive/automatic.png",
     to: "/offers/stabilizer-combo",
     label: "-50%",
   },
