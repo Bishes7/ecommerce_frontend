@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useEsewaStatusQuery } from "../slices/paymentApiSlice";
+import { useNavigate, useLocation } from "react-router-dom";
+import {
+  useEsewaStatusQuery,
+  useVerifyPaymentMutation,
+} from "../slices/paymentApiSlice";
+
 import { usePayOrderMutation } from "../slices/ordersApiSlice";
 import { Loader } from "../components/ui/Loader";
 import { Message } from "../components/ui/Message";
@@ -9,46 +13,102 @@ import { CheckCircle, XCircle } from "lucide-react";
 
 const PaymentSuccess = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [params, setParams] = useState(null);
+  const [gateway, setGateway] = useState(null);
 
-  // Get transaction details from session storage
+  // Detect payment source
   useEffect(() => {
-    const raw = sessionStorage.getItem("esewa_txn");
-    if (raw) setParams(JSON.parse(raw));
-  }, []);
+    // Esewa uses session storage
+    const rawEsewa = sessionStorage.getItem("esewa_txn");
 
-  // Call API to verify payment
-  const { data, isLoading, error } = useEsewaStatusQuery(
-    params
+    // Khalti sends ?pidx=xxxx in return_url
+    const query = new URLSearchParams(location.search);
+    const pidx = query.get("pidx");
+
+    if (rawEsewa) {
+      setGateway("esewa");
+      setParams(JSON.parse(rawEsewa));
+    } else if (pidx) {
+      setGateway("khalti");
+      setParams({ pidx }); // only need pidx
+    }
+  }, [location.search]);
+
+  // API Hooks
+  const {
+    data: esewaData,
+    isLoading: esewaLoading,
+    error: esewaError,
+  } = useEsewaStatusQuery(
+    params && gateway === "esewa"
       ? {
           total_amount: params.total_amount,
           transaction_uuid: params.transaction_uuid,
         }
       : { total_amount: "", transaction_uuid: "" },
-    { skip: !params }
+    { skip: gateway !== "esewa" }
   );
+
+  const [
+    verifyKhalti,
+    { data: khaltiData, isLoading: khaltiLoading, error: khaltiError },
+  ] = useVerifyPaymentMutation();
 
   const [payOrder] = usePayOrderMutation();
 
-  // Mark order as paid if payment successful
+  // Auto verify Khalti once pidx is available
   useEffect(() => {
     const run = async () => {
-      if (!data || !params) return;
-      if (data.status === "COMPLETE") {
-        await payOrder({
-          orderId: params.orderId,
-          details: {
-            isPaid: true,
-            paymentResult: { id: data.ref_id, status: "COMPLETED" },
-          },
-        }).unwrap();
-        setTimeout(() => navigate(`/order/${params.orderId}`), 2500);
+      if (gateway === "khalti" && params?.pidx) {
+        try {
+          const result = await verifyKhalti({ pidx: params.pidx }).unwrap();
+
+          if (result.status === "Completed") {
+            await payOrder({
+              orderId: result.purchase_order_id, // 👈 use orderId from Khalti response
+              details: {
+                isPaid: true,
+                paymentResult: {
+                  id: result.transaction_id || result.pidx,
+                  status: "COMPLETED",
+                },
+              },
+            }).unwrap();
+
+            setTimeout(
+              () => navigate(`/order/${result.purchase_order_id}`),
+              2500
+            );
+          }
+        } catch (err) {
+          console.error("Khalti verify failed:", err);
+        }
+      }
+    };
+    run();
+  }, [gateway, params, verifyKhalti, payOrder, navigate]);
+
+  // Mark order paid for eSewa
+  useEffect(() => {
+    const run = async () => {
+      if (gateway === "esewa" && esewaData && params) {
+        if (esewaData.status === "COMPLETE") {
+          await payOrder({
+            orderId: params.orderId,
+            details: {
+              isPaid: true,
+              paymentResult: { id: esewaData.ref_id, status: "COMPLETED" },
+            },
+          }).unwrap();
+          setTimeout(() => navigate(`/order/${params.orderId}`), 2500);
+        }
       }
     };
     run().catch(console.error);
-  }, [data, params, payOrder, navigate]);
+  }, [gateway, esewaData, params, payOrder, navigate]);
 
-  // Handle missing context
+  // Missing context
   if (!params)
     return (
       <Message variant="warning">
@@ -56,8 +116,12 @@ const PaymentSuccess = () => {
       </Message>
     );
 
+  const loading = gateway === "esewa" ? esewaLoading : khaltiLoading;
+  const error = gateway === "esewa" ? esewaError : khaltiError;
+  const data = gateway === "esewa" ? esewaData : khaltiData;
+
   // Loading state
-  if (isLoading)
+  if (loading)
     return (
       <div
         className="d-flex flex-column align-items-center justify-content-center"
@@ -83,7 +147,7 @@ const PaymentSuccess = () => {
       </div>
     );
 
-  // Success or Failure UI
+  // UI
   return (
     <div className="container py-5 d-flex justify-content-center">
       <motion.div
@@ -93,7 +157,7 @@ const PaymentSuccess = () => {
         className="card shadow-lg p-4 text-center"
         style={{ maxWidth: "420px", width: "100%", borderRadius: "15px" }}
       >
-        {data?.status === "COMPLETE" ? (
+        {data?.status === "COMPLETE" || data?.status === "Completed" ? (
           <>
             <CheckCircle size={70} className="text-success mb-3" />
             <h2 className="fw-bold text-success">Payment Successful</h2>
@@ -106,16 +170,19 @@ const PaymentSuccess = () => {
                 <strong>Status:</strong> {data.status}
               </p>
               <p>
-                <strong>Ref ID:</strong> {data.ref_id}
+                <strong>Ref ID:</strong> {data.ref_id || data.transaction_id}
               </p>
               <p>
-                <strong>Amount:</strong> Rs. {params.total_amount}
+                <strong>Amount:</strong> Rs.{" "}
+                {data.total_amount || params.total_amount}
               </p>
             </div>
 
             <button
               className="btn btn-success w-100"
-              onClick={() => navigate(`/order/${params.orderId}`)}
+              onClick={() =>
+                navigate(`/order/${data.purchase_order_id || params.orderId}`)
+              }
             >
               View Order Details
             </button>

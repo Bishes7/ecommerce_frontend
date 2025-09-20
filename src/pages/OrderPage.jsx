@@ -123,7 +123,7 @@ const OrderPage = () => {
           )}
 
           {order.paymentMethod === "Cash on Delivery" && (
-            <Card className="p-3 shadow-lg border-warning">
+            <Card className="p-4 shadow-md border-warning">
               <h4 className="text-warning fw-bold">Cash on Delivery</h4>
               <p className="mb-0 ">
                 Thank you for choosing <strong>Cash on Delivery</strong>. Our

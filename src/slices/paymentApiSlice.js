@@ -6,7 +6,7 @@ export const paymentApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     createPaymentIntent: builder.mutation({
       query: (data) => ({
-        url: `${PAYMENT_URL}/khalti`,
+        url: `${PAYMENT_URL}/khalti/initiate`,
         method: "POST",
         body: data,
       }),
